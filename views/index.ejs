@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>SB Admin 2 - Bootstrap Admin Theme</title>
+
+  <!-- Bootstrap Core CSS -->
+  <link href="/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- MetisMenu CSS -->
+  <!-- <link href="/lib/metismenu/dist/metisMenu.min.css" rel="stylesheet"> -->
+  <!-- Custom CSS -->
+  <link href="/static/stylesheets/sb-admin-2.css" rel="stylesheet">
+  <!-- Custom Fonts -->
+  <link href="/lib/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+  <header>
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/">SB Admin v2.0</a>
+        <%- include('topRightMenu') %>
+      </div>
+    </nav>
+  </header>
+
+  <div id="wrapper" style="height: 100%;">
+    <%- include('sidebarLeftMenu') %>
+      <div id="page-wrapper" style="height: 100%;">
+        <%- include(page) %>
+      </div>
+  </div>
+
+  <script data-main="/static/javascripts/index" src="/lib/requirejs/require.js"></script>
+</body>
+
+</html>

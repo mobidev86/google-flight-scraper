@@ -1,0 +1,107 @@
+<!-- Bootstrap Core CSS -->
+<link href="/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Custom CSS -->
+<link href="/static/stylesheets/sb-admin-2.css" rel="stylesheet">
+<!-- Custom Fonts -->
+<link href="/lib/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">
+            <%- pageTitle %>
+        </h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <form class="form-inline" method="GET" action="/search-flights">
+                    <div class="form-group">
+                        <label for="exampleInputName2">Origin</label>
+                        <select name="origin" class="form-control">
+                            <option value="Ahmedabad">Ahmedabad</option>
+                            <option value="San Francisco">San Francisco</option>
+                            <option value="New Delhi">New Delhi</option>
+                            <option value="Miami">Miami</option>
+                            <option value="Bengaluru">Bengaluru</option>
+                            <option value="Dubai">Dubai</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail2">Destination</label>
+                        <select name="destination" class="form-control">
+                            <option value="Ahmedabad">Ahmedabad</option>
+                            <option value="San Francisco">San Francisco</option>
+                            <option value="New Delhi">New Delhi</option>
+                            <option value="Miami">Miami</option>
+                            <option value="Bengaluru">Bengaluru</option>
+                            <option value="Dubai">Dubai</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success">Search</button>
+                </form>
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Origin</th>
+                                <th>Destination</th>
+                                <th>Departure</th>
+                                <th>Arrival</th>
+                                <th>Duration</th>
+                                <th>Stops</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (data) { %>
+                                <% for(let i=0; i < data.length; i++) { %>
+                                    <tr>
+                                        <td>
+                                            <%= i + 1 %>
+                                        </td>
+                                        <td>
+                                            <%= data[i].origin %>
+                                        </td>
+                                        <td>
+                                            <%= data[i].destination %>
+                                        </td>
+                                        <td>
+                                            <%= data[i].departure %>
+                                        </td>
+                                        <td>
+                                            <%= data[i].arrival %>
+                                        </td>
+                                        <td>
+                                            <%= data[i].duration %>
+                                        </td>
+                                        <td>
+                                            <%= data[i].stops %>
+                                        </td>
+                                        <td>
+                                            <%= data[i].price %>
+                                        </td>
+                                    </tr>
+                                    <% } %>
+                                        <% } %>
+                                            <% if (!data || data.length==0) { %>
+                                                <tr>
+                                                    <td colspan="8" class="text-center">No flights available for this
+                                                        route in record</td>
+                                                </tr>
+                                                <% } %>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.table-responsive -->
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+</div>
