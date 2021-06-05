@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { findAllScrapes, findFlightsByRoute } = require('../services/scrapper.service');
+const { findAllScrapes, findFlightsByRoute, getRouteChartPrice } = require('../services/scrapper.service');
 
 router.get('/', async (req, res) => {
     try {
@@ -30,7 +30,6 @@ router.get('/dashboard', async (req, res) => {
     }
 })
 
-//get-flights
 router.get('/search-flights', async (req, res) => {
     let { origin, destination } = req.query;
     let result = await findFlightsByRoute({ origin, destination })
@@ -38,9 +37,10 @@ router.get('/search-flights', async (req, res) => {
         'index', {
         page: 'flights',
         pageTitle: 'Flights',
-        data: result
-    }
-    );
+        show_modal: false,
+        data: result || [],
+        query: req.query
+    });
 })
 
 router.get('/flights', (req, res) => {
@@ -48,10 +48,32 @@ router.get('/flights', (req, res) => {
         'index', {
         page: 'flights',
         pageTitle: 'Flights',
+        show_modal: false,
+        query: null,
         data: []
     });
 })
 
+
+router.get('/route-chart', async (req, res) => {
+    try {
+        let { inputOrigin, inputDestination } = req.query;
+        let result = await findFlightsByRoute({ origin: inputOrigin, destination: inputDestination })
+        let chartData = await getRouteChartPrice({ origin: inputOrigin, destination: inputDestination })
+
+        res.render(
+            'index', {
+            page: 'flights',
+            pageTitle: 'Flights',
+            show_modal: true,
+            query: req.query,
+            data: result || [],
+            chartData: chartData || []
+        });
+    } catch (error) {
+        console.log(error);
+    }
+})
 
 
 

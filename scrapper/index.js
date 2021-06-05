@@ -4,13 +4,10 @@ const FlightList = require('./page-parser/flight-list')
 const chalk = require('chalk');
 const utils = require('../utils');
 
-async function initScrapping() {
+
+async function scrappingForRoute(args) {
     try {
         let flightResults = [];
-        const args = utils.getInputParameters();
-        console.log("--------Input arguments----")
-        console.log(args)
-        console.log("--------Input arguments----")
 
         var browser = new Browser(args);
         await browser.init();
@@ -74,8 +71,10 @@ async function initScrapping() {
             inputProps: args
         };
     } catch (error) {
-        console.log(chalk.red("Something goes wrong error:", error.message))
+        return Promise.reject(error);
     }
 }
 
-module.exports = initScrapping;
+module.exports = {
+    scrappingForRoute
+};

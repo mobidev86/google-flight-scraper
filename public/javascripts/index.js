@@ -31,10 +31,8 @@ define('handleSidebarToggler', [], function () {
 
 		// handle sidebar show/hide
 		body.on('click', '.sidebar-toggler', function (e) {
-
 			var sidebarMenuSubs = $('#sidebar .nav-second-level, #sidebar .nav-third-level');
 
-			//collapse("toggle") した際にheightが「0」になるため、height style削除
 			$("#sidebar-area .dropdown-collapse").parent("li").children("ul").css('height', '');
 
 			$(".sidebar-search", $('.page-sidebar')).removeClass("open");
@@ -63,6 +61,11 @@ define('handleSidebarToggler', [], function () {
 require(['jquery', 'bootstrap', 'isIE', 'handleSidebarToggler'],
 	function ($, bootstrap, isIE, handleSidebarToggler) {
 		//side menu toggle (init)
+		$("[data-dismiss='modal']").on('click', function () {
+			$(this).parents('.modal').css("display", "none")
+		})
+
+
 		if (isIE() <= 9) {
 			$('#sidebar').find("li.active").has("ul").children("ul").collapse("show");
 			$('#sidebar').find("li").not(".active").has("ul").children("ul").collapse("hide");

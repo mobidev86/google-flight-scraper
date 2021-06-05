@@ -1,6 +1,27 @@
 const moment = require('moment');
 
 module.exports = {
+    getCitiesForStaticRoutes() {
+        var places = ['Ahmedabad', 'San Francisco', 'New Delhi', 'Miami', 'Bengaluru', 'Dubai'];
+        return places;
+    },
+    createUniqRoutesFromCities(cities) {
+        let routes = [];
+        for (let i = 0; i < cities.length - 1; i++) {
+            for (let j = i + 1; j < cities.length; j++) {
+                routes.push({
+                    origin: cities[i],
+                    destination: cities[j]
+                });
+
+                routes.push({
+                    origin: cities[j],
+                    destination: cities[i]
+                });
+            }
+        }
+        return routes;
+    },
     getDepartureToReturnDate() {
         let departureDate = moment(new Date()).format("YYYY-MM-DD");
         let returnDate = moment(departureDate, "YYYY-MM-DD").add(325, 'days').format("YYYY-MM-DD");
@@ -12,7 +33,7 @@ module.exports = {
     },
     getInputParameters: function () {
         let { departureDate, returnDate } = this.getDepartureToReturnDate();
-        var places = ['Ahmedabad', 'San Francisco', 'New Delhi', 'Miami', 'Bengaluru', 'Dubai']
+        var places = this.getCitiesForStaticRoutes();
 
         function getRendomPlace() {
             let originItem = places[Math.floor(Math.random() * places.length)];

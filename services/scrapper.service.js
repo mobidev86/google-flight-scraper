@@ -1,4 +1,6 @@
-const { ScrapeMaster, ScrapeFlights } = require('../models');
+const { ScrapeMaster, ScrapeFlights, ScrapeDailyFlights, sequelize } = require('../models');
+var Sequelize = require('sequelize');
+var Op = Sequelize.Op;
 
 const findScrapeByRoute = async ({ origin, destination }) => {
     try {
@@ -50,6 +52,30 @@ const findFlightsByRoute = async ({ origin, destination }) => {
     }
 }
 
+const getRouteChartPrice = async ({ origin, destination }) => {
+    try {
+        let scrape = await findScrapeByRoute({ origin, destination })
+        if (scrape && scrape.dataValues) {
+            let scrapeId = scrape.dataValues.id;
+            let data = await ScrapeDailyFlights.findAll({
+                attributes: [
+                    [sequelize.fn('date_trunc', 'day', sequelize.col('flight_datetime')), 'flightDate'],
+                    [sequelize.fn('AVG', sequelize.col('price')), 'price_average']
+                ],
+                where: {
+                    _scrape_id: scrapeId
+                },
+                group: 'flightDate'
+            })
+            return data;
+        } else {
+            return [];
+        }
+    } catch (error) {
+        return error;
+    }
+}
+
 const createNewScrape = async (data) => {
     try {
         return await ScrapeMaster.create(data);
@@ -65,6 +91,36 @@ const createScrapeFlights = async (flights) => {
         throw new Error(error);
     }
 }
+
+const saveScrapeDailyFlights = async (flights) => {
+    try {
+        return await ScrapeDailyFlights.bulkCreate(flights);
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
+const checkScrapeRouteTodayDataExists = async (scrapeId, flightDate) => {
+    try {
+        let todaysScrapeForRoute = await ScrapeDailyFlights.findAll({
+            returning: true,
+            where: {
+                [Op.and]: [
+                    { _scrape_id: scrapeId },
+                    {
+                        flight_datetime: {
+                            [Op.gte]: flightDate,
+                        }
+                    }
+                ]
+            }
+        })
+        return todaysScrapeForRoute;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
 
 const removeScrapeFlights = async (scrapeId) => {
     try {
@@ -94,5 +150,8 @@ module.exports = {
     removeScrapeFlights,
     findFlightsByRoute,
     findAllScrapes,
-    updateScrapeById
+    updateScrapeById,
+    saveScrapeDailyFlights,
+    getRouteChartPrice,
+    checkScrapeRouteTodayDataExists
 }

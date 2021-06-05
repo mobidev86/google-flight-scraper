@@ -15,6 +15,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: '_scrape_id',
         as: 'Flights'
       });
+
+      ScrapeMaster.hasMany(models.ScrapeDailyFlights, {
+        foreignKey: '_scrape_id',
+        as: 'DailyFlights'
+      });
     }
   };
   ScrapeMaster.init({

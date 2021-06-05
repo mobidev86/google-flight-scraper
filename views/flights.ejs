@@ -5,103 +5,198 @@
 <!-- Custom Fonts -->
 <link href="/lib/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-<div class="row">
-    <div class="col-lg-12">
-        <h1 class="page-header">
-            <%- pageTitle %>
-        </h1>
-    </div>
-</div>
-<div class="row">
-    <div class="col-lg-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <form class="form-inline" method="GET" action="/search-flights">
-                    <div class="form-group">
-                        <label for="exampleInputName2">Origin</label>
-                        <select name="origin" class="form-control">
-                            <option value="Ahmedabad">Ahmedabad</option>
-                            <option value="San Francisco">San Francisco</option>
-                            <option value="New Delhi">New Delhi</option>
-                            <option value="Miami">Miami</option>
-                            <option value="Bengaluru">Bengaluru</option>
-                            <option value="Dubai">Dubai</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleInputEmail2">Destination</label>
-                        <select name="destination" class="form-control">
-                            <option value="Ahmedabad">Ahmedabad</option>
-                            <option value="San Francisco">San Francisco</option>
-                            <option value="New Delhi">New Delhi</option>
-                            <option value="Miami">Miami</option>
-                            <option value="Bengaluru">Bengaluru</option>
-                            <option value="Dubai">Dubai</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-success">Search</button>
-                </form>
-            </div>
-            <!-- /.panel-heading -->
-            <div class="panel-body">
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Origin</th>
-                                <th>Destination</th>
-                                <th>Departure</th>
-                                <th>Arrival</th>
-                                <th>Duration</th>
-                                <th>Stops</th>
-                                <th>Price</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% if (data) { %>
-                                <% for(let i=0; i < data.length; i++) { %>
-                                    <tr>
-                                        <td>
-                                            <%= i + 1 %>
-                                        </td>
-                                        <td>
-                                            <%= data[i].origin %>
-                                        </td>
-                                        <td>
-                                            <%= data[i].destination %>
-                                        </td>
-                                        <td>
-                                            <%= data[i].departure %>
-                                        </td>
-                                        <td>
-                                            <%= data[i].arrival %>
-                                        </td>
-                                        <td>
-                                            <%= data[i].duration %>
-                                        </td>
-                                        <td>
-                                            <%= data[i].stops %>
-                                        </td>
-                                        <td>
-                                            <%= data[i].price %>
-                                        </td>
-                                    </tr>
-                                    <% } %>
-                                        <% } %>
-                                            <% if (!data || data.length==0) { %>
-                                                <tr>
-                                                    <td colspan="8" class="text-center">No flights available for this
-                                                        route in record</td>
-                                                </tr>
-                                                <% } %>
-                        </tbody>
-                    </table>
+<% if (show_modal) { %>
+    <div class="modal" style="display: block" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Price Graph</h4>
                 </div>
-                <!-- /.table-responsive -->
+                <div class="modal-body">
+                    <% if (chartData && chartData.length> 0) { %>
+                        <canvas id="myChart"></canvas>
+                        <%} else { %>
+                            <p class="text-center" style="padding: 30px 0px;"> Not data available for route!! </p>
+                            <% } %>
+
+                </div>
             </div>
-            <!-- /.panel-body -->
         </div>
-        <!-- /.panel -->
+        <script>
+            let chartData = '<%- JSON.stringify(chartData) %>';
+            let labels = [], data = []
+            chartData = chartData && JSON.parse(chartData) || [];
+            if (chartData.length) {
+                for (let index = 0; index < chartData.length; index++) {
+                    const item = chartData[index];
+                    labels.push(moment(item.flightDate).format("MMM Do YYYY"));
+                    data.push(item.price_average)
+                }
+
+                var myChart = new Chart(
+                    document.getElementById('myChart'),
+                    {
+                        type: 'bar',
+                        data: {
+                            labels,
+                            datasets: [{
+                                label: 'Price Graph',
+                                data,
+                                backgroundColor: "rgb(102, 157, 246)",
+                                borderColor: "rgb(102, 157, 246)",
+                                hoverBackgroundColor: "rgb(24, 90, 188)",
+                                borderWidth: 1,
+                                borderRadius: 5,
+                                hoverRadius: 4
+                            }]
+                        },
+                        options: {
+
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                },
+                            }
+                        },
+                    }
+                );
+            }
+
+            function formatPrice(price) {
+                var x = price;
+                x = x.toString();
+                var lastThree = x.substring(x.length - 3);
+                var otherNumbers = x.substring(0, x.length - 3);
+                if (otherNumbers != '')
+                    lastThree = ',' + lastThree;
+                var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+                return res;
+            }
+
+        </script>
     </div>
-</div>
+    <% } %>
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">
+                    <%- pageTitle %>
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="flex ">
+                            <form class="form-inline flex-item" method="GET" action="/search-flights">
+                                <div class="form-group">
+                                    <label for="exampleInputName2">Origin</label>
+                                    <select name="origin" class="form-control origin">
+                                        <option value="Ahmedabad">Ahmedabad</option>
+                                        <option value="San Francisco">San Francisco</option>
+                                        <option value="New Delhi">New Delhi</option>
+                                        <option value="Miami">Miami</option>
+                                        <option value="Bengaluru">Bengaluru</option>
+                                        <option value="Dubai">Dubai</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail2">Destination</label>
+                                    <select name="destination" class="form-control destination">
+                                        <option value="Ahmedabad">Ahmedabad</option>
+                                        <option value="San Francisco">San Francisco</option>
+                                        <option value="New Delhi">New Delhi</option>
+                                        <option value="Miami">Miami</option>
+                                        <option value="Bengaluru">Bengaluru</option>
+                                        <option value="Dubai">Dubai</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-success">Search</button>
+                            </form>
+                            <div class="pull-right flex-item">
+                                <form method="get" action="/route-chart">
+                                    <input type="hidden" name="inputOrigin" />
+                                    <input type="hidden" name="inputDestination" />
+                                    <button type="submit"><i class="fa fa-bar-chart fa-fw fa-lg"></i></button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Origin</th>
+                                        <th>Destination</th>
+                                        <th>Departure</th>
+                                        <th>Arrival</th>
+                                        <th>Duration</th>
+                                        <th>Stops</th>
+                                        <th>Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (data) { %>
+                                        <% for(let i=0; i < data.length; i++) { %>
+                                            <tr>
+                                                <td>
+                                                    <%= i + 1 %>
+                                                </td>
+                                                <td>
+                                                    <%= data[i].origin %>
+                                                </td>
+                                                <td>
+                                                    <%= data[i].destination %>
+                                                </td>
+                                                <td>
+                                                    <%= data[i].departure %>
+                                                </td>
+                                                <td>
+                                                    <%= data[i].arrival %>
+                                                </td>
+                                                <td>
+                                                    <%= data[i].duration %>
+                                                </td>
+                                                <td>
+                                                    <%= data[i].stops %>
+                                                </td>
+                                                <td>
+                                                    <%= data[i].price %>
+                                                </td>
+                                            </tr>
+                                            <% } %>
+                                                <% } %>
+                                                    <% if (!data || data.length==0) { %>
+                                                        <tr>
+                                                            <td colspan="8" class="text-center">No flights available for
+                                                                this
+                                                                route in record</td>
+                                                        </tr>
+                                                        <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.table-responsive -->
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
+                <!-- /.panel -->
+            </div>
+        </div>
+        <script>
+            let query = '<%- JSON.stringify(query)%>';
+            query = query && JSON.parse(query) || {};
+
+            if (query && Object.keys(query).length) {
+                let queryOrigin = query.origin || query.inputOrigin;
+                document.querySelector("[name='origin']").value = queryOrigin;
+
+                let queryDestination = query.destination || query.inputDestination;
+                document.querySelector("[name='destination']").value = queryDestination;
+            }
+        </script>
+        <script data-main="/static/javascripts/flights" src="/lib/requirejs/require.js"></script>

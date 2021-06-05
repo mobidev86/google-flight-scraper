@@ -2,10 +2,11 @@ const express = require('express');
 const router = express.Router();
 const { findFlightsByRoute, findAllScrapes } = require('../services/scrapper.service');
 
+//* All api's for testing purpose
+
 router.get('/get-flights', async (req, res) => {
     try {
         const { origin, destination } = req.query;
-
         let result = await findFlightsByRoute({ origin, destination })
         res.status(200).send(result);
     } catch (error) {

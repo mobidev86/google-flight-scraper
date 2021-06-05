@@ -211,7 +211,8 @@ class ScrapperService {
                         if (secItems.length > 0) {
                             let lastItem = secItems[secItems.length - 1] || null;
                             if (lastItem) {
-                                lastItem.querySelector(selectors.findMoreItem).click()
+                                let findMore = lastItem.querySelector(selectors.findMoreItem);
+                                if (findMore) findMore.click()
                                 setTimeout(() => resolve(), 5000)
                             } else {
                                 resolve()

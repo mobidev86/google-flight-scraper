@@ -1,4 +1,5 @@
 require('dotenv').config();
+require('events').EventEmitter.prototype.setMaxListeners(100);
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors')
